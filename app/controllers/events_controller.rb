@@ -82,6 +82,14 @@ class EventsController < ApplicationController
     end
   end
 
+  def refreshtimes
+    refresh_time = Time.now.change(:usec => 0)
+    @events = Event.where("next_instance <= ?", refresh_time)
+    @events.each { |e| e.save }
+    flash[:notice] = %Q{Refresh completed : #{refresh_time}}
+    redirect_to events_path
+  end
+
   private
 
   def allowed_event_params(p)
